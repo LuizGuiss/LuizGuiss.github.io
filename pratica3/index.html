@@ -2,7 +2,10 @@
 
 <head>
   <meta charset="utf-8">
-
+  <!-- 
+    jQuery facilita a codificacao
+    glMatrix para obter funções para matrizes e vetores
+  -->
   <script type="text/javascript" src="js/gl-matrix-2.4.0.min.js"></script>
   <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript">
@@ -10,19 +13,20 @@
     var vMatrix = mat4.create();
     var pMatrix = mat4.create();
 
-    var triangleVertexPositionBuffer;
-    var triangleVertexColorBuffer;
-    var squareVertexPositionBuffer;
+    //variáveis dos buffers de cores
     var squareVertexColorBuffer;
-
+    var triangleVertexColorBuffer;
+    
+    var squareVertexPositionBuffer;
+    var triangleVertexPositionBuffer;
 
     // Iniciar o ambiente quando a página for carregada
-    $(function () {
+    $(function () { //$ -> qnd o documento estiver sido processado, execute a função
       iniciaWebGL();
     });
 
     function iniciaWebGL() {
-      var canvas = $('#canvas-webgl')[0];
+      var canvas = $('#canvas-webgl')[0]; //obtem a referencia do objeto canvas
       iniciarGL(canvas); // Definir como um canvas 3D
       iniciarShaders();  // Obter e processar os Shaders
       iniciarBuffers();  // Enviar o triângulo e quadrado na GPU
@@ -30,6 +34,7 @@
       desenharCena();    // Usar os itens anteriores e desenhar
     }
 
+    //tentando obter o contexto WebGL
     function iniciarGL(canvas) {
       try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -42,11 +47,14 @@
       }
     }
 
+    //shader -> descrição textual
+    //vértices e cores -> candidatos a pixels
     var shaderProgram;
     function iniciarShaders() {
       var vertexShader = getShader(gl, "#shader-vs");
       var fragmentShader = getShader(gl, "#shader-fs");
 
+      //associa os shaders: attachShader ; envia para a GPU
       shaderProgram = gl.createProgram();
       gl.attachShader(shaderProgram, vertexShader);
       gl.attachShader(shaderProgram, fragmentShader);
@@ -56,6 +64,7 @@
         alert("Não pode inicializar shaders");
       }
 
+      //referencia os attributes e uniforms dos shaders
       gl.useProgram(shaderProgram);
 
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -70,12 +79,15 @@
 
     }
 
+    //compila os shaders
+    //captura a tag script
     function getShader(gl, id) {
       var shaderScript = $(id)[0];
       if (!shaderScript) {
         return null;
       }
 
+      //capturamos o objeto
       var str = "";
       var k = shaderScript.firstChild;
       while (k) {
@@ -84,6 +96,7 @@
         k = k.nextSibling;
       }
 
+      //cria o objeto shader dentro do contexto
       var shader;
       if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -95,6 +108,7 @@
         return null;
       }
 
+      //o código é o texto q capturamos; compilação
       gl.shaderSource(shader, str);
       gl.compileShader(shader);
 
@@ -106,6 +120,13 @@
       return shader;
     }
 
+    /* 
+      m: orientar, posicionar e escalar ou cisalhar os objetos no mundo
+      v: orientar e posicionar a câmera para ver uma parte do ambiente.
+        a camera movimenta o mundo e não o objeto
+      p: colocar todo o mundo tridimensional em um simples plano
+    */
+
     function iniciarBuffers() {
       triangleVertexPositionBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
@@ -114,10 +135,10 @@
         -1.0, -1.0, 0.0,
         1.0, -1.0, 0.0
       ];
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-      triangleVertexPositionBuffer.itemSize = 3;
-      triangleVertexPositionBuffer.numItems = 3;
-      /*--Adicione estas linhas abaixo--*/
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW); //cpu para gpu
+      triangleVertexPositionBuffer.itemSize = 3; // 3 vértices
+      triangleVertexPositionBuffer.numItems = 3; // 3 dimensões
+      
       triangleVertexColorBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
       var cores = [
@@ -155,12 +176,12 @@
     }
 
     function iniciarAmbiente() {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0); //cor do fundo como preto
       gl.enable(gl.DEPTH_TEST);
     }
 
     function desenharCena() {
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); //limpa a tela
       mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
       mat4.identity(mMatrix);
       mat4.identity(vMatrix);
@@ -169,23 +190,22 @@
       mat4.translate(mMatrix, mMatrix, [-1.5, 0.0, -7.0]);
       gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-      /*--Adicione estas duas linhas--*/
       gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
       setMatrixUniforms();
-      gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+      gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems); //desenha
 
       // Desenhando o Quadrado
       mat4.translate(mMatrix, mMatrix, [3.0, 0.0, 0.0]);
       gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-      /*--Adicione estas duas linhas--*/
       gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
       setMatrixUniforms();
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
     }
 
+    //manda as transformações para a GPU
     function setMatrixUniforms() {
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
       gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
@@ -208,7 +228,7 @@
       vColor = aVertexColor;
     }
   </script>
-  
+
   <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
     varying vec4 vColor;

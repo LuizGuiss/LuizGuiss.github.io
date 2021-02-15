@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8">
 
+  <!-- 
+    jQuery facilita a codificacao
+    glMatrix para obter funções para matrizes e vetores
+    webgl-utils garante que o ambiente seja compatível
+  -->
   <script type="text/javascript" src="js/gl-matrix-2.4.0.min.js"></script>
   <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="js/webgl-utils.js"></script>
@@ -12,6 +17,7 @@
     var vMatrix = mat4.create();
     var pMatrix = mat4.create();
 
+    //variáveis dos buffers de cores
     var cuboVertexPositionBuffer;
     var cuboVertexTextureCoordBuffer;
     var cuboVertexIndexBuffer;
@@ -33,7 +39,7 @@
     var teclasPressionadas = {};
 
     // Iniciar o ambiente quando a página for carregada
-    $(function () {
+    $(function () { //$ -> qnd o documento estiver sido processado, execute a função
       iniciaWebGL();
     });
 
@@ -49,7 +55,7 @@
       document.onkeydown = eventoTeclaPress;
       document.onkeyup = eventoTeclaSolta;
 
-      tick();
+      tick();            //programará sua próx chamada através do requestAnimFrame
     }
 
     function eventoTeclaPress(evento) {
@@ -76,7 +82,7 @@
       imagemCaixa.src = "caixa.gif";
       shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
     }
-    function tratarTextura(texturas) {
+    function tratarTextura(texturas) {  //recebe o vetor de texturas
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
       gl.bindTexture(gl.TEXTURE_2D, texturas[0]);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texturas[0].image);
@@ -97,7 +103,7 @@
       gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-
+    //programa a prox execução, desenha a cena e atualiza p/ animação
     function tick() {
       requestAnimFrame(tick);
       tratarTeclado();
@@ -105,6 +111,7 @@
       animar();
     }
 
+    //tentando obter o contexto WebGL
     function iniciarGL(canvas) {
       try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -117,11 +124,14 @@
       }
     }
 
+    //shader -> descrição textual
+    //vértices e cores -> candidatos a pixels
     var shaderProgram;
     function iniciarShaders() {
       var vertexShader = getShader(gl, "#shader-vs");
       var fragmentShader = getShader(gl, "#shader-fs");
 
+      //associa os shaders: attachShader ; envia para a GPU
       shaderProgram = gl.createProgram();
       gl.attachShader(shaderProgram, vertexShader);
       gl.attachShader(shaderProgram, fragmentShader);
@@ -131,6 +141,7 @@
         alert("Não pode inicializar shaders");
       }
 
+      //referencia os attributes e uniforms dos shaders
       gl.useProgram(shaderProgram);
 
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -144,16 +155,20 @@
       shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
     }
 
+    //convertem os ângulos para radianos
     function degToRad(graus) {
       return graus * Math.PI / 180;
     }
 
+    //compila os shaders
+    //captura a tag script
     function getShader(gl, id) {
       var shaderScript = $(id)[0];
       if (!shaderScript) {
         return null;
       }
 
+      //capturamos o objeto
       var str = "";
       var k = shaderScript.firstChild;
       while (k) {
@@ -162,6 +177,7 @@
         k = k.nextSibling;
       }
 
+      //cria o objeto shader dentro do contexto
       var shader;
       if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -173,6 +189,7 @@
         return null;
       }
 
+      //o código é o texto q capturamos; compilação
       gl.shaderSource(shader, str);
       gl.compileShader(shader);
 
@@ -183,6 +200,13 @@
 
       return shader;
     }
+
+    /* 
+      m: orientar, posicionar e escalar ou cisalhar os objetos no mundo
+      v: orientar e posicionar a câmera para ver uma parte do ambiente.
+        a camera movimenta o mundo e não o objeto
+      p: colocar todo o mundo tridimensional em um simples plano
+    */
 
     function iniciarBuffers() {
       cuboVertexPositionBuffer = gl.createBuffer();
@@ -228,6 +252,7 @@
       cuboVertexPositionBuffer.itemSize = 3;
       cuboVertexPositionBuffer.numItems = 24;
 
+      //cria as cores distintas e as replicam
       cuboVertexTextureCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexTextureCoordBuffer);
       var coordTextura = [
@@ -288,7 +313,7 @@
     }
 
     function iniciarAmbiente() {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0); //cor do fundo como preto
       gl.enable(gl.DEPTH_TEST);
     }
 
@@ -304,7 +329,7 @@
       vec3.set(translation, 3.0, 0.0, 0.0);
       mat4.translate(mMatrix, mMatrix, [0.0, 0.0, z]);
 
-      //mPushMatrix();
+      //rotações
       mat4.rotate(mMatrix, mMatrix, degToRad(xRot), [1, 0, 0]);
       mat4.rotate(mMatrix, mMatrix, degToRad(yRot), [0, 1, 0]);
 
@@ -313,6 +338,7 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexTextureCoordBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexTextureCoordAttribute, cuboVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+      //ativa a textura
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, caixaTexturas[filtro]);
       gl.uniform1i(shaderProgram.samplerUniform, 0);
@@ -322,6 +348,7 @@
       gl.drawElements(gl.TRIANGLES, cuboVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
 
+    //manda as transformações para a GPU
     function setMatrixUniforms() {
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
       gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
@@ -332,6 +359,7 @@
     function animar() {
       var agora = new Date().getTime();
       if (ultimo != 0) {
+        //calculos para atualizar os ângulos
         var diferenca = agora - ultimo;
         xRot += ((90 * diferenca) / 1000.0) % 360.0;
         yRot += ((75 * diferenca) / 1000.0) % 360.0;
@@ -342,6 +370,8 @@
       ultimo = agora;
     }
 
+    //checa se antes de desenhar, a tecla está pressionada
+    //se tiver, atualiza as variáveis
     function tratarTeclado() {
       if (teclasPressionadas[33]) {
         // Page Up

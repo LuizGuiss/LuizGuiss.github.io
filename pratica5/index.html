@@ -2,25 +2,33 @@
 
 <head>
   <meta charset="utf-8">
-
+  <!-- 
+    jQuery facilita a codificacao
+    glMatrix para obter funções para matrizes e vetores
+    webgl-utils garante que o ambiente seja compatível
+  -->
   <script type="text/javascript" src="js/gl-matrix-2.4.0.min.js"></script>
   <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="js/webgl-utils.js"></script>
   <script type="text/javascript">
     var mMatrix = mat4.create();
-    /*---Adicione esta linha---*/
     var mMatrixPilha = [];
     var vMatrix = mat4.create();
     var pMatrix = mat4.create();
 
+    //variáveis dos buffers de cores
     var piramideVertexPositionBuffer;
     var piramideVertexColorBuffer;
     var cuboVertexPositionBuffer;
     var cuboVertexColorBuffer;
-    var cuboVertexIndexBuffer;
+    var cuboVertexIndexBuffer; //buffer de índices do cubo
+
+    //usdos p/ rotacionar os objetos
+    var rPiramide = 0;
+    var rCubo = 0;
 
     // Iniciar o ambiente quando a página for carregada
-    $(function () {
+    $(function () { //$ -> qnd o documento estiver sido processado, execute a função
       iniciaWebGL();
     });
 
@@ -30,17 +38,16 @@
       iniciarShaders();  // Obter e processar os Shaders
       iniciarBuffers();  // Enviar o triângulo e quadrado na GPU
       iniciarAmbiente(); // Definir background e cor do objeto
-      /*---Remova desenharCena e adicione esta linha---*/
-      tick();
+      tick();            //programará sua próx chamada através do requestAnimFrame
     }
 
-    /*---Adicione esta função---*/
+    //trabalham como um pilha, retirando e colocando matrizes
+    //copia a matriz atual (mMatrix) e guarda na pilha
     function mPushMatrix() {
       var copy = mat4.clone(mMatrix);
       mMatrixPilha.push(copy);
     }
-
-    /*---Adicione esta função---*/
+    //devlve a matriz guardada no topo da pilha para a mMatrix
     function mPopMatrix() {
       if (mMatrixPilha.length == 0) {
         throw "inválido popMatrix!";
@@ -48,14 +55,14 @@
       mMatrix = mMatrixPilha.pop();
     }
 
-
-
+    //programa a prox execução, desenha a cena e atualiza p/ animação
     function tick() {
       requestAnimFrame(tick);
       desenharCena();
       animar();
     }
 
+    //tentando obter o contexto WebGL
     function iniciarGL(canvas) {
       try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -68,11 +75,14 @@
       }
     }
 
+    //shader -> descrição textual
+    //vértices e cores -> candidatos a pixels
     var shaderProgram;
     function iniciarShaders() {
       var vertexShader = getShader(gl, "#shader-vs");
       var fragmentShader = getShader(gl, "#shader-fs");
 
+      //associa os shaders: attachShader ; envia para a GPU
       shaderProgram = gl.createProgram();
       gl.attachShader(shaderProgram, vertexShader);
       gl.attachShader(shaderProgram, fragmentShader);
@@ -82,6 +92,7 @@
         alert("Não pode inicializar shaders");
       }
 
+      //referencia os attributes e uniforms dos shaders
       gl.useProgram(shaderProgram);
 
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -96,16 +107,20 @@
 
     }
 
+    //convertem os ângulos para radianos
     function degToRad(graus) {
       return graus * Math.PI / 180;
     }
 
+    //compila os shaders
+    //captura a tag script
     function getShader(gl, id) {
       var shaderScript = $(id)[0];
       if (!shaderScript) {
         return null;
       }
 
+      //capturamos o objeto
       var str = "";
       var k = shaderScript.firstChild;
       while (k) {
@@ -114,6 +129,7 @@
         k = k.nextSibling;
       }
 
+      //cria o objeto shader dentro do contexto
       var shader;
       if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -125,6 +141,7 @@
         return null;
       }
 
+      //o código é o texto q capturamos; compilação
       gl.shaderSource(shader, str);
       gl.compileShader(shader);
 
@@ -135,6 +152,13 @@
 
       return shader;
     }
+
+    /* 
+      m: orientar, posicionar e escalar ou cisalhar os objetos no mundo
+      v: orientar e posicionar a câmera para ver uma parte do ambiente.
+        a camera movimenta o mundo e não o objeto
+      p: colocar todo o mundo tridimensional em um simples plano
+    */
 
     function iniciarBuffers() {
       piramideVertexPositionBuffer = gl.createBuffer();
@@ -231,6 +255,7 @@
       cuboVertexPositionBuffer.itemSize = 3;
       cuboVertexPositionBuffer.numItems = 24;
 
+      //cria as cores distintas e as replicam
       cuboVertexColorBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexColorBuffer);
       cores = [
@@ -269,7 +294,7 @@
     }
 
     function iniciarAmbiente() {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0); //cor do fundo como preto
       gl.enable(gl.DEPTH_TEST);
     }
 
@@ -284,8 +309,8 @@
       vec3.set(translation, -1.5, 1.0, -7.0);
       mat4.translate(mMatrix, mMatrix, translation);
 
-      mPushMatrix();
-      mat4.rotate(mMatrix, mMatrix, degToRad(rPiramide), [0, 1, 0]);
+      mPushMatrix();                                                 // Guarda a Mtriz original
+      mat4.rotate(mMatrix, mMatrix, degToRad(rPiramide), [0, 1, 0]); // Aplica rotação
 
       gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -295,7 +320,7 @@
       setMatrixUniforms();
       gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);
 
-      mPopMatrix();
+      mPopMatrix();                                 // Extrai a Matriz original guardada
 
       vec3.set(translation, 3.0, 0.0, 0.0);
       mat4.translate(mMatrix, mMatrix, translation);
@@ -307,27 +332,28 @@
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cuboVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
       gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexColorBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cuboVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cuboVertexIndexBuffer);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cuboVertexIndexBuffer); // cria o buffer p/ os indices dos vertices
 
       setMatrixUniforms();
+      //necessita do tipo do poligno, nro de poligonos, o tipo de dado
       gl.drawElements(gl.TRIANGLES, cuboVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 
       mPopMatrix();
     }
 
+    //manda as transformações para a GPU
     function setMatrixUniforms() {
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
       gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
       gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, mMatrix);
     }
 
-    var rPiramide = 0;
-    var rCubo = 0;
     var ultimo = 0;
     function animar() {
       var agora = new Date().getTime();
       if (ultimo != 0) {
+        //calculos para atualizar os ângulos
         var diferenca = agora - ultimo;
         rPiramide += ((90 * diferenca) / 1000.0) % 360.0;
         rCubo += ((75 * diferenca) / 1000.0) % 360.0;

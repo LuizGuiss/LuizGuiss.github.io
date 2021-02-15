@@ -2,29 +2,35 @@
 
 <head>
   <meta charset="utf-8">
-
+  <!-- 
+    jQuery facilita a codificacao
+    glMatrix para obter funções para matrizes e vetores
+    webgl-utils garante que o ambiente seja compatível
+  -->
   <script type="text/javascript" src="js/gl-matrix-2.4.0.min.js"></script>
   <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="js/webgl-utils.js"></script>
   <script type="text/javascript">
     var mMatrix = mat4.create();
-    /*---Adicione esta linha---*/
     var mMatrixPilha = [];
     var vMatrix = mat4.create();
     var pMatrix = mat4.create();
 
+    //variáveis dos buffers de cores
     var triangleVertexPositionBuffer;
     var triangleVertexColorBuffer;
     var squareVertexPositionBuffer;
     var squareVertexColorBuffer;
 
+    //usdos p/ rotacionar os objetos
     var rTri = 0;
     var rQuad = 0;
 
     // Iniciar o ambiente quando a página for carregada
-    $(function () {
+    $(function () { //$ -> qnd o documento estiver sido processado, execute a função
       iniciaWebGL();
     });
+
 
     function iniciaWebGL() {
       var canvas = $('#canvas-webgl')[0];
@@ -32,17 +38,16 @@
       iniciarShaders();  // Obter e processar os Shaders
       iniciarBuffers();  // Enviar o triângulo e quadrado na GPU
       iniciarAmbiente(); // Definir background e cor do objeto
-      /*---Remova desenharCena e adicione esta linha---*/
-      tick();
+      tick();            //programará sua próx chamada através do requestAnimFrame
     }
 
-    /*---Adicione esta função---*/
+    //trabalham como um pilha, retirando e colocando matrizes
+    //copia a matriz atual (mMatrix) e guarda na pilha
     function mPushMatrix() {
       var copy = mat4.clone(mMatrix);
       mMatrixPilha.push(copy);
     }
-
-    /*---Adicione esta função---*/
+    //devlve a matriz guardada no topo da pilha para a mMatrix
     function mPopMatrix() {
       if (mMatrixPilha.length == 0) {
         throw "inválido popMatrix!";
@@ -51,13 +56,14 @@
     }
 
 
-
+    //programa a prox execução, desenha a cena e atualiza p/ animação
     function tick() {
       requestAnimFrame(tick);
       desenharCena();
       animar();
     }
 
+    //tentando obter o contexto WebGL
     function iniciarGL(canvas) {
       try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -70,11 +76,14 @@
       }
     }
 
+    //shader -> descrição textual
+    //vértices e cores -> candidatos a pixels
     var shaderProgram;
     function iniciarShaders() {
       var vertexShader = getShader(gl, "#shader-vs");
       var fragmentShader = getShader(gl, "#shader-fs");
 
+      //associa os shaders: attachShader ; envia para a GPU
       shaderProgram = gl.createProgram();
       gl.attachShader(shaderProgram, vertexShader);
       gl.attachShader(shaderProgram, fragmentShader);
@@ -84,6 +93,7 @@
         alert("Não pode inicializar shaders");
       }
 
+      //referencia os attributes e uniforms dos shaders
       gl.useProgram(shaderProgram);
 
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -98,16 +108,20 @@
 
     }
 
+    //convertem os ângulos para radianos
     function degToRad(graus) {
       return graus * Math.PI / 180;
     }
 
+    //compila os shaders
+    //captura a tag script
     function getShader(gl, id) {
       var shaderScript = $(id)[0];
       if (!shaderScript) {
         return null;
       }
 
+      //capturamos o objeto
       var str = "";
       var k = shaderScript.firstChild;
       while (k) {
@@ -116,6 +130,7 @@
         k = k.nextSibling;
       }
 
+      //cria o objeto shader dentro do contexto
       var shader;
       if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -127,6 +142,7 @@
         return null;
       }
 
+      //o código é o texto q capturamos; compilação
       gl.shaderSource(shader, str);
       gl.compileShader(shader);
 
@@ -137,6 +153,13 @@
 
       return shader;
     }
+
+    /* 
+      m: orientar, posicionar e escalar ou cisalhar os objetos no mundo
+      v: orientar e posicionar a câmera para ver uma parte do ambiente.
+        a camera movimenta o mundo e não o objeto
+      p: colocar todo o mundo tridimensional em um simples plano
+    */
 
     function iniciarBuffers() {
       triangleVertexPositionBuffer = gl.createBuffer();
@@ -149,7 +172,7 @@
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
       triangleVertexPositionBuffer.itemSize = 3;
       triangleVertexPositionBuffer.numItems = 3;
-      /*--Adicione estas linhas abaixo--*/
+
       triangleVertexColorBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
       var cores = [
@@ -187,12 +210,12 @@
     }
 
     function iniciarAmbiente() {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0); //cor do fundo como preto
       gl.enable(gl.DEPTH_TEST);
     }
 
     function desenharCena() {
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); //limpa a tela
       mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
       mat4.identity(mMatrix);
       mat4.identity(vMatrix);
@@ -233,6 +256,7 @@
       mPopMatrix();
     }
 
+    //manda as transformações para a GPU
     function setMatrixUniforms() {
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
       gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
@@ -243,6 +267,7 @@
     function animar() {
       var agora = new Date().getTime();
       if (ultimo != 0) {
+        //calculos para atualizar os ângulos
         var diferenca = agora - ultimo;
         rTri += ((90 * diferenca) / 1000.0) % 360.0;
         rQuad += ((75 * diferenca) / 1000.0) % 360.0;
