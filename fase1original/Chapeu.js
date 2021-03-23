@@ -49,7 +49,7 @@ function bufferCorChapeu() {
 
 function desenharChapeu() {
   var translation = vec3.create();
-  vec3.set(translation, 0.1, 6.75, -8.0);
+  vec3.set(translation, 0.1 + deslocaXcabeca, 6.75 + deslocaYcabeca, -8.0); //desloca a cabeca do boneco, incluindo olhos e boca, além do chapeu
 
   mPushMatrix();
   mat4.translate(mMatrix, mMatrix, translation);

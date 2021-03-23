@@ -40,6 +40,9 @@
       iniciarAmbiente();    // Definir background e cor do objeto
       desenharCena();       // Usar os itens anteriores e desenhar
 
+      document.onkeydown = eventoPressionaTecla;
+      document.onkeyup = eventoSoltaTecla;
+
       tick();
     }
 
@@ -176,6 +179,7 @@
 
     function tick() {
       requestAnimFrame(tick);
+      teclado();
       desenharCena();
 
       animarCorpo();
@@ -215,6 +219,67 @@
       gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
       gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, mMatrix);
     }
+
+    var yVelo = 0;
+    var xVelo = 0;
+
+    //desloca a cabeca do boneco, incluindo olhos e boca, além do chapeu
+    deslocaXcabeca = 0;
+    deslocaYcabeca = 0;
+    function teclado() {
+      if (teclasPressionadas[87]) { // W
+        deslocaYcabeca += 0.01;
+      }
+
+      if (teclasPressionadas[83]) { // S
+        deslocaYcabeca -= 0.01;
+      }
+
+      if (teclasPressionadas[65]) { // A
+        deslocaXcabeca -= 0.01;
+      }
+
+      if (teclasPressionadas[68]) { // D
+        deslocaXcabeca += 0.01;
+      }
+
+      if (teclasPressionadas[33]) {
+        // Page Up
+        z -= 0.05;
+      }
+      if (teclasPressionadas[34]) {
+        // Page Down
+        z += 0.05;
+      }
+      if (teclasPressionadas[37]) {
+        // Esquerda
+        yVelo -= 1;
+      }
+      if (teclasPressionadas[39]) {
+        // Direita
+        yVelo += 1;
+      }
+      if (teclasPressionadas[38]) {
+        // Cima
+        xVelo -= 1;
+      }
+      if (teclasPressionadas[40]) {
+        // Baixo
+        xVelo += 1;
+      }
+    }
+
+
+    
+    var teclasPressionadas = [];
+    function eventoPressionaTecla(e) {
+      teclasPressionadas[e.keyCode] = true;
+    }
+
+    function eventoSoltaTecla(e) {
+      teclasPressionadas[e.keyCode] = false;
+    }
+
   </script>
 
   <script id="shader-vs" type="x-shader/x-vertex">
@@ -247,6 +312,15 @@
 <body>
   <canvas id="canvas-webgl" width="600px" height="500px" style="border:none">
   </canvas>
+
+  <hr>
+  <p>
+    <strong>Teclas</strong>:
+    <p><strong>w</strong>: sobe o posicionamento da cabeça;</p>
+    <p><strong>s</strong>: desce o posicionamento da cabeça;</p>
+    <p><strong>a</strong>: move o posicionamento da cabeça para a esquerda;</p>
+    <p><strong>d</strong>: move o posicionamento da cabeça para a direita;</p>
+  </p>
 </body>
 
 </html>
