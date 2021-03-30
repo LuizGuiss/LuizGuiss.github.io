@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tutorial parte 4- Breaking Primitives Down</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+
+<body>
+  <a-scene>
+    <a-assets>
+      <img id="img1" src="../images/absurdo.jpg">
+      <img id="img2" src="../images/absurdo2.jpg">
+    </a-assets>
+
+    <a-image src="#img1"
+             position="0 1.6 -11"
+             scale="12 9 1">
+    </a-image>
+
+    <a-box color="#AA0000" height="1.5" position="-1 0.5 -4">
+    </a-box>
+
+    <a-entity
+      geometry="primitive: box;
+                height: 1.5"
+      material="shader: standard;
+                color:#AA0000" 
+      position="1 0.5 -4">
+    </a-entity>
+    
+    <a-entity
+      geometry="primitive: cylinder;
+                theta-length: 90;
+                theta-start: 135;
+                height: 0.833;
+                open-ended: true"
+      material="shader: standard;
+                color:#FFFFFF;
+                side: double;
+                src: #img1" 
+      position="1 0.5 -4"
+      scale="-10 10 10">
+    </a-entity>
+    <!-- <a-box color="#AA0000"
+           opacity="0.5"
+           width="3"
+           height="0.1"
+           depth="3"
+           position="0 1.5 -1.5"> 
+    </a-box> -->
+  </a-scene>
+</body>
+
+</html>
