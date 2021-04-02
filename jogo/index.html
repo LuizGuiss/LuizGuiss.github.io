@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Joguinho LEGAL</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+
+<body>
+  <a-scene fog="type: linear; color: #a3d0ed; near:5; far:20">
+
+    <a-assets>
+      <img id="pedraVulcan" src="pedraVulc.jpg">
+      <img id="Vulcan" src="vulcao.jpg">
+      <img id="vulcao" src="images.jfif">
+    </a-assets>
+
+    <a-sky color="#a3d0ed"></a-sky>
+
+    <!-- Lights -->
+    <a-light type="directional" castShadow="true" intensity="0.4" color="#D0EAF9;" position="5 3 1"></a-light>
+    <a-light intensity="0.8" type="ambient" color="#B4C5EC"></a-light>
+
+    <!-- Camera -->
+    <a-camera position="0 0 2.5"></a-camera>
+
+    <!-- Icebergs -->
+    <a-cone src="#pedraVulcan" class="iceberg" segments-radial="5" segments-height="3" height="1" radius-top="0.15"
+      radius-bottom="0.5" position="3 -0.1 -1.5"></a-cone>
+    <a-cone src="#pedraVulcan" class="iceberg" segments-radial="7" segments-height="3" height="0.5" radius-top="0.25" radius-bottom="0.35"
+      position="-3 -0.1 -0.5"></a-cone>
+    <a-cone src="#pedraVulcan" class="iceberg" segments-radial="6" segments-height="2" height="0.5" radius-top="0.25" radius-bottom="0.25"
+      position="-5 -0.2 -3.5"></a-cone>
+
+    <!-- Ocean -->
+    <a-box src="#vulcao" depth="50" width="50" roughness="0.3" side="back" height="1" position="0 -0.5 0"></a-box>
+
+  </a-scene>
+</body>
+
+</html>
