@@ -4,6 +4,8 @@
 <head>
   <title>Joguinho LEGAL</title>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="./assets/jogo.js"></script>
+  <!-- <script src="./assets/lava.js"></script> -->
   <!-- <script src="https://cdn.jsdelivr.net/gh/alvinwan/aframe-low-poly@1.0.0/dist/aframe-low-poly.min.js"></script> -->
 </head>
 
@@ -24,7 +26,16 @@
     <a-light intensity="0.8" type="ambient" color="#B4C5EC"></a-light>
 
     <!-- Camera -->
-    <a-camera position="0 0.65 2.5"></a-camera>
+    <a-camera lane-controls position="0 0.65 2.5">
+      <a-entity id="cursor-mobile" cursor="fuse: true; fuseTimeout: 250"
+        position="0 0 -1"
+        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+        material="color: white; shader: flat"
+        scale="0.5 0.5 0.5"
+        raycaster="far: 50; interval: 1000; objects: .clickable">
+      <a-animation begin="fusing" easing="ease-in" attribute="scale"
+        fill="backwards" from="1 1 1" to="0.2 0.2 0.2" dur="250"></a-animation>
+    </a-camera>
 
     <!-- Pedras .     amplitude???, amplitude-variance???-->
     <a-cone src="#pedraVulcan" class="iceberg" segments-radial="5" segments-height="3" height="1" radius-top="0.15"
@@ -77,6 +88,8 @@
     </a-cone>
 
     <!-- Vulcan -->
+    <!-- <a-lava depth="50" width="50" amplitude="0" amplitude-variance="0.1" speed="1.5" speed.variance="1" opacity="1" roughness="0.3" density="50" side="back" height="1" position="0 -0.5 0"></a-lava>
+    <a-lava depth="50" width="50" amplitude="0" amplitude-variance="0.15" speed="1.5" speed.variance="1" opacity="0.5" roughness="0.3" density="50" side="back" height="1" position="0 -0.5 0"></a-lava> -->
     <a-box src="#vulcao" depth="50" width="50" roughness="0.3" side="back" height="1" position="0 -0.5 0"></a-box>
 
     <!-- Platform -->
