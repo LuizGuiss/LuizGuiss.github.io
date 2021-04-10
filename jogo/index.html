@@ -20,8 +20,10 @@
 
     <a-sky color="#a3d0ed"></a-sky>
 
+
+
     <!-- Lights -->
-    <a-light type="directional" castShadow="true" intensity="0.4" color="#D0EAF9;" position="5 3 1"></a-light>
+    <a-light type="directional" castShadow="true" intensity="0.4" color="#D0EAF9" position="5 3 1"></a-light>
     <a-light intensity="0.8" type="ambient" color="#B4C5EC"></a-light>
 
     <!-- Camera -->
@@ -35,13 +37,11 @@
 
     <!-- Pedras .     amplitude???, amplitude-variance???-->
     <a-cone src="#pedraVulcan" class="iceberg" segments-radial="5" segments-height="3" height="1" radius-top="0.15"
-      radius-bottom="0.5" position="3 -0.1 -1.5" 
-      animation="property: rotation;
+      radius-bottom="0.5" position="3 -0.1 -1.5" animation="property: rotation;
                  from: -5 0 0;
                  to: 5 0 0;
                  loop: true;
-                 dir: alternate"
-      animation__2="property: position;
+                 dir: alternate" animation__2="property: position;
                    from: 3 -0.2 -1.5;
                    to: 4 -0.2 -2.5;
                    loop: true;
@@ -50,14 +50,12 @@
                    easing: linear">
     </a-cone>
     <a-cone src="#pedraVulcan" class="iceberg" segments-radial="7" segments-height="3" height="0.5" radius-top="0.25"
-      radius-bottom="0.35" position="-3 -0.1 -0.5"
-      animation="property: rotation;
+      radius-bottom="0.35" position="-3 -0.1 -0.5" animation="property: rotation;
                  from: 0 0 -5;
                  to: 5 0 0;
                  loop: true;
                  dir: alternate;
-                 dur: 1500"
-      animation__2="property: position;
+                 dur: 1500" animation__2="property: position;
                    from: -4 -0.2 -0.5;
                    to: -3 -0.2 -0.5;
                    loop: true;
@@ -66,14 +64,12 @@
                    easing: linear">
     </a-cone>
     <a-cone src="#pedraVulcan" class="iceberg" segments-radial="6" segments-height="2" height="0.5" radius-top="0.25"
-      radius-bottom="0.25" position="-5 -0.2 -3.5"
-      animation="property: rotation;
+      radius-bottom="0.25" position="-5 -0.2 -3.5" animation="property: rotation;
                  from: 5 0 -5;
                  to: 5 0 0;
                  loop: true;
                  dir: alternate;
-                 dur: 800"
-      animation__2="property: position;
+                 dur: 800" animation__2="property: position;
                    from: -3 -0.2 -3.5;
                    to: -5 -0.2 -5.5;
                    loop: true;
@@ -87,31 +83,75 @@
     <a-box src="#vulcao" depth="50" width="50" roughness="0.3" side="back" height="1" position="0 -0.5 0"></a-box>
 
     <!-- Platform -->
-    <a-cone src="#textura" scale="2 2 2" shadow position="0 -3.5 -1.5" rotation="90 0 0" radius-top="1.9" radius-bottom="1.9" segments-radial="20" segments-height="10" height="20" emissive="#005DED" emissive-intensity="0.1">
-      <a-entity side="back" id="tree-container" position="0 .5 -1.5" rotation="-90 0 0">
-        <!-- Player -->
-        <a-entity id="player" player>
-          <a-sphere side="back" color="#ff0000" radius="0.05" position="0 0.51 0"
-            animation="property: position;
+    <a-cone src="#textura" scale="2 2 2" shadow position="0 -3.5 -1.5" rotation="90 0 0" radius-top="1.9"
+      radius-bottom="1.9" segments-radial="20" segments-height="10" height="20" emissive="#005DED"
+      emissive-intensity="0.1">
+      <a-entity side="back" id="rocha-container" position="0 .5 -1.5" rotation="-90 0 0">
+
+        <!-- Rochas -->
+        <a-entity id="template-rocha-center" shadow scale="0.3 0.3 0.3" position="0 0.5 0">
+          <a-entity geometry="
+          primitive: cone;
+          segments-height: 1;
+          segments-radial:4;
+          radius-bottom:0.3;" material="color:black;
+          flat-shading: true;" animation="property: position;
+          easing: linear;
+          from: 0 0.5 -7;
+          to: 0 0.5 1.5;
+          dur:5000;
+          loop:true">
+          </a-entity>
+        </a-entity>
+      <a-entity id="template-rocha-left" shadow scale="0.3 0.3 0.3" position="-0.6 0.45 0">
+        <a-entity geometry="
+          primitive: cone;
+          segments-height: 1;
+          segments-radial:4;
+          radius-bottom:0.3;" material="color:black;
+          flat-shading: true;" animation="property: position;
+          easing: linear;
+          from: -0.6 0.45 -7;
+          to:-0.6 0.45 1.5;
+          dur:5000;
+          loop:true">
+        </a-entity>
+      </a-entity>
+      <a-entity id="template-rocha-right" shadow scale="0.3 0.3 0.3" position="0.6 0.45 0">
+        <a-entity geometry="
+          primitive: cone;
+          segments-height: 1;
+          segments-radial:4;
+          radius-bottom:0.3;" material="color:black;
+          flat-shading: true;" animation="property: position;
+          easing: linear;
+          from: 0.6 0.45 -7;
+          to: 0.6 0.45 1.5;
+          dur:5000;
+          loop:true">
+        </a-entity>
+      </a-entity>
+    </a-entity>
+      <!-- Player -->
+      <a-entity id="player" player>
+        <a-sphere side="back" color="#ff0000" radius="0.05" position="0 0.51 0" animation="property: position;
                  from: 0 0.5 0.6;
                  to: 0 0.525 0.6;
                  loop: true;
                  dir: alternate;
-                 ease: ease-in-out"
-            animation__2="property: radius;
+                 ease: ease-in-out" animation__2="property: radius;
                         from: 0.05;
                         to: 0.055;
                         loop: true;
                         dir: alternate;
                         dur: 1500">
-            <a-light type="point" intensity="0.35" color="#FF440C"
-              animation="property: intensity;
+          <a-light type="point" intensity="0.35" color="#FF440C" animation="property: intensity;
                          from: 0.35;
                          to: 0.5;
                          loop: true;
                          dir: alternate-reverse"></a-light>
-          </a-sphere>
-        </a-entity>
+        </a-sphere>
+      </a-entity>
       </a-entity>
     </a-cone>
 
