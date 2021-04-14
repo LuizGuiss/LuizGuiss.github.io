@@ -5,20 +5,22 @@
   <title>Joguinho LEGAL</title>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="./assets/jogo.js"></script>
+  <script src="./assets/controle.js"></script>
+  <script src="./assets/pontuacao.js"></script>
+  <script src="./assets/menu.js"></script>
+  <script src="./assets/colisoes.js"></script>
+  <script src="./assets/obstaculos.js"></script>
 </head>
 
 <body>
   <a-scene fog="type: linear; color: #a3d0ed; near:5; far:20">
-
     <a-assets>
       <img id="pedraVulcan" src="pedraVulc.jpg">
       <img id="Vulcan" src="vulcao.jpg">
       <img id="textura" src="textura.jpg">
       <img id="vulcao" src="images.jfif">
     </a-assets>
-
     <a-sky color="#a3d0ed"></a-sky>
-
     <!-- mixins -->
     <a-assets>
       <a-mixin id="foliage" geometry="
@@ -29,7 +31,6 @@
           color: black;
           flat-shading: true;">
       </a-mixin>
-
       <a-mixin id="top" geometry="
           primitive: box;
           height: 0.5;
@@ -37,46 +38,36 @@
           depth: 0.1;" material="
           color: white;">
       </a-mixin>
-
+      <!-- mixin para o score -->
       <a-mixin id="text" text="
-          font:exo2bold;
           anchor:center;
           align:center;">
       </a-mixin>
-
       <a-mixin id="title" text="
-       font:exo2bold;
        height:40;
        width:25;
        opacity:0.75;
        anchor:center;
        align:center;">
       </a-mixin>
-
       <a-mixin id="heading" text="
-       font:exo2bold;
        height:10;
        width:10;
        opacity:0.75;
        anchor:center;
        align:center;">
       </a-mixin>
-
       <a-mixin id="copy" text="
-       font:exo2bold;
        height:5;
        width:5;
        opacity:0.75;
        anchor:center;
        align:center;">
       </a-mixin>
-
     </a-assets>
-
     <!-- Lights -->
     <a-light type="directional" castShadow="true" intensity="0.4" color="#D0EAF9" position="5 3 1"></a-light>
     <a-light intensity="0.8" type="ambient" color="#B4C5EC"></a-light>
-
     <!-- Camera -->
     <a-camera lane-controls position="0 1.65 2.5">
       <a-entity id="cursor-mobile" cursor="fuse: true; fuseTimeout: 250" position="0 0 -1"
@@ -85,10 +76,6 @@
         <a-animation begin="fusing" easing="ease-in" attribute="scale" fill="backwards" from="1 1 1" to="0.2 0.2 0.2"
           dur="250"></a-animation>
     </a-camera>
-
-
-
-
     <!-- Pedras .     amplitude???, amplitude-variance???-->
     <a-cone src="#pedraVulcan" class="iceberg" segments-radial="5" segments-height="3" height="1" radius-top="0.15"
       radius-bottom="0.5" position="3 -0.1 -1.5" animation="property: rotation;
@@ -132,17 +119,15 @@
                    easing: linear">
       </lp-cone>
     </a-cone>
-
     <!-- Vulcan -->
     <a-box src="#vulcao" depth="50" width="50" roughness="0.3" side="back" height="1" position="0 -0.5 0"></a-box>
-
     <!-- Platform -->
     <a-cone src="#textura" scale="2 2 2" shadow position="0 -3.5 -1.5" rotation="90 0 0" radius-top="1.9"
       radius-bottom="1.9" segments-radial="20" segments-height="10" height="20" emissive="#005DED"
       emissive-intensity="0.1">
       <a-entity side="back" id="obstaculo-container" position="0 .5 -1.5" rotation="-90 0 0">
-
-        <a-entity data-obstaculo-position-index="1" class ="obstaculo" id="template-obstaculo-centro" shadow scale="0.3 0.3 0.3" position="0 0.6 0" animation="property: position;
+        <a-entity data-obstaculo-position-index="1" class="obstaculo" id="template-obstaculo-centro" shadow
+          scale="0.3 0.3 0.3" position="0 0.6 0" animation="property: position;
                      easing: linear;
                      from: 0 0.6 -7;
                      to: 0 0.6 1.5;
@@ -150,7 +135,8 @@
           <a-entity mixin="foliage"></a-entity>
           <a-entity mixin="trunk" position="0 -0.5 0"></a-entity>
         </a-entity>
-        <a-entity data-obstaculo-position-index="0" class ="obstaculo" id="template-obstaculo-esquerda" shadow scale="0.3 0.3 0.3" position="0 0.6 0" animation="property: position;
+        <a-entity data-obstaculo-position-index="0" class="obstaculo" id="template-obstaculo-esquerda" shadow
+          scale="0.3 0.3 0.3" position="0 0.6 0" animation="property: position;
                      easing: linear;
                      from: -0.5 0.55 -7;
                      to: -0.5 0.55 1.5;
@@ -158,7 +144,8 @@
           <a-entity mixin="foliage"></a-entity>
           <a-entity mixin="trunk" position="0 -0.5 0"></a-entity>
         </a-entity>
-        <a-entity data-obstaculo-position-index="2" class ="obstaculo" id="template-obstaculo-direita" shadow scale="0.3 0.3 0.3" position="0.5 0.6 0" animation="property: position;
+        <a-entity data-obstaculo-position-index="2" class="obstaculo" id="template-obstaculo-direita" shadow
+          scale="0.3 0.3 0.3" position="0.5 0.6 0" animation="property: position;
                      easing: linear;
                      from: 0.5 0.55 -7;
                      to: 0.5 0.55 1.5;
@@ -166,18 +153,15 @@
           <a-entity mixin="foliage"></a-entity>
           <a-entity mixin="trunk" position="0 -0.5 0"></a-entity>
         </a-entity>
-
         <!-- Pontuação -->
-      
-        <a-text id="score" value="" mixin="text" height="40" width="40" position="0 1.2 -3" opacity="0.75">
-
+        <a-text id="score" value="0" mixin="text" height="40" width="40" position="2 1.2 -3" opacity="0.75">
         </a-text>
-
         <!-- Menus -->
         <a-entity id="menu-container">
           <a-entity id="start-menu" position="0 1.1 -3">
             <a-entity id="start-copy" position="0 1 0">
-              <a-text value="Vire a esquerda e a direita atraves do mouse para deslocar o player e assim evitar os obstaculos, para iniciar basta levar o cursor ao botao de start."
+              <a-text
+                value="Vire a esquerda e a direita atraves do mouse para deslocar o player e assim evitar os obstaculos, para iniciar basta levar o cursor ao botao de start."
                 mixin="copy"></a-text>
               <a-text value="Start" position="0 1.1 0" mixin="heading"></a-text>
               <a-box id="start-button" position="0 1 -0.05" width="1.5" height="0.6" depth="0.1"></a-box>
@@ -194,7 +178,6 @@
             <a-text value="Game Over" mixin="title"></a-text>
           </a-entity>
         </a-entity>
-
         <!-- Player -->
         <a-entity id="player" player>
           <a-sphere side="back" color="#ff0000" radius="0.05" position="0 0.51 0" animation="property: position;
@@ -218,7 +201,6 @@
         </a-entity>
       </a-entity>
     </a-cone>
-
   </a-scene>
 </body>
 
