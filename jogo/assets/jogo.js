@@ -18,17 +18,16 @@ function startGame() {
 //função de game Over, finaliza a partida, mostra pontuação final, e apresenta botão de restart para reiniciar o jogo
 function gameOver() {
   isGameRunning = false;
-  if (pontuacao == 1) {
-    alert('Game Over! Você fez ' + pontuacao + ' ponto.');
-  } else {
-    alert('Game Over! Você fez ' + pontuacao + ' pontos.');
+  if(pontuacao == 1) {
+    alert('Game Over! Você fez '+pontuacao+' ponto.');
+  } else{
+    alert('Game Over! Você fez '+pontuacao+ ' pontos.');
   }
   zeraObstaculos();
   zeraPontuacao();
   exibirGameOverMenu();
 }
-
-// funcao para randomizar os obstaculos
+// utilitários
 function shuffle(a) {
   var j, x, i;
   for (i = a.length - 1; i > 0; i--) {

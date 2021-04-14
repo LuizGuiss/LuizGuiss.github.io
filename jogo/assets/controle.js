@@ -1,6 +1,7 @@
 const POSITION_X_ESQUERDA = -0.5;
 const POSITION_X_DIREITA = 0.5;
 const POSITION_X_CENTRO = 0;
+
 //0 esquerda
 //1 centro
 //2 direita
