@@ -117,8 +117,37 @@
                    dir: alternate;
                    dur: 15000;
                    easing: linear">
-      </lp-cone>
     </a-cone>
+
+    <a-cone src="#pedraVulcan" class="iceberg" segments-radial="6" segments-height="2" height="0.5" radius-top="0.25"
+      radius-bottom="0.25" position="-8 -0.2 -6" animation="property: rotation;
+                 from: 5 0 -5;
+                 to: 5 0 0;
+                 loop: true;
+                 dir: alternate;
+                 dur: 800" animation__2="property: position;
+                   from: -6 -0.2 -6;
+                   to: -8 -0.2 -7;
+                   loop: true;
+                   dir: alternate;
+                   dur: 15000;
+                   easing: linear">
+    </a-cone>
+
+    <a-cone src="#pedraVulcan" class="iceberg" segments-radial="7" segments-height="5" height="0.8" radius-top="0.15"
+    radius-bottom="0.5" position="6 -0.1 5" animation="property: rotation;
+               from: -5 0 0;
+               to: 5 0 0;
+               loop: true;
+               dir: alternate" animation__2="property: position;
+                 from: 6 -0.2 -5;
+                 to: 8 -0.2 -6;
+                 loop: true;
+                 dir: alternate;
+                 dur: 12000;
+                 easing: linear">
+  </a-cone>
+
     <!-- Vulcan -->
     <a-box src="#vulcao" depth="50" width="50" roughness="0.3" side="back" height="1" position="0 -0.5 0"></a-box>
     <!-- Platform -->
