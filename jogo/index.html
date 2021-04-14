@@ -57,6 +57,13 @@
        anchor:center;
        align:center;">
       </a-mixin>
+      <a-mixin id="autor" text="
+       height:8;
+       width:5;
+       opacity:0.75;
+       anchor:center;
+       align:left;">
+      </a-mixin>
       <a-mixin id="copy" text="
        height:5;
        width:5;
@@ -83,8 +90,8 @@
                  to: 5 0 0;
                  loop: true;
                  dir: alternate" animation__2="property: position;
-                   from: 3 -0.2 -1.5;
-                   to: 4 -0.2 -2.5;
+                   from: 3 -0.6 -1.5;
+                   to: 4 -0.6 -2.5;
                    loop: true;
                    dir: alternate;
                    dur: 12000;
@@ -97,8 +104,8 @@
                  loop: true;
                  dir: alternate;
                  dur: 1500" animation__2="property: position;
-                   from: -4 -0.2 -0.5;
-                   to: -3 -0.2 -0.5;
+                   from: -4 -0.6 -0.5;
+                   to: -3 -0.6 -0.5;
                    loop: true;
                    dir: alternate;
                    dur: 15000;
@@ -111,8 +118,8 @@
                  loop: true;
                  dir: alternate;
                  dur: 800" animation__2="property: position;
-                   from: -3 -0.2 -3.5;
-                   to: -5 -0.2 -5.5;
+                   from: -3 -0.6 -3.5;
+                   to: -5 -0.6 -5.5;
                    loop: true;
                    dir: alternate;
                    dur: 15000;
@@ -126,8 +133,8 @@
                  loop: true;
                  dir: alternate;
                  dur: 800" animation__2="property: position;
-                   from: -6 -0.2 -6;
-                   to: -8 -0.2 -7;
+                   from: -6 -0.6 -6;
+                   to: -8 -0.6 -7;
                    loop: true;
                    dir: alternate;
                    dur: 15000;
@@ -140,8 +147,8 @@
                to: 5 0 0;
                loop: true;
                dir: alternate" animation__2="property: position;
-                 from: 6 -0.2 -5;
-                 to: 8 -0.2 -6;
+                 from: 6 -0.6 -5;
+                 to: 8 -0.6 -6;
                  loop: true;
                  dir: alternate;
                  dur: 12000;
@@ -192,10 +199,11 @@
               <a-text
                 value="Vire a esquerda e a direita atraves do mouse para deslocar o player e assim evitar os obstaculos, para iniciar basta levar o cursor ao botao de start."
                 mixin="copy"></a-text>
-              <a-text value="Start" position="0 1.1 0" mixin="heading"></a-text>
+              <a-text value="Start" position="0 1 0" mixin="heading"></a-text>
               <a-box id="start-button" position="0 1 -0.05" width="1.5" height="0.6" depth="0.1"></a-box>
             </a-entity>
-            <a-text value="Joguinho LEGAL" mixin="title"></a-text>
+            <a-text value="Luiz Guilherme e" position="-5 1.0 0"></a-text>
+            <a-text value="Matheus Bicalho" position="-5 0.8 0"></a-text>
           </a-entity>
           <a-entity id="game-over" position="0 1.1 -3">
             <a-text value="?" mixin="heading" id="game-score" position="0 1.7 0"></a-text>
